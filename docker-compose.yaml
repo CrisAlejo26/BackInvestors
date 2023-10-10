@@ -1,0 +1,16 @@
+
+version: '3.8'
+
+services:
+  db:
+    image: mysql
+    restart: always
+    container_name: cajeros
+    volumes:
+      - ./mySQL:/data/db
+      - ./batm.sql:/docker-entrypoint-initdb.d/batm.sql
+    environment:
+      - MYSQL_ROOT_PASSWORD=alejo
+      - MYSQL_DATABASE=consolidado_cajeros
+    ports:
+      - 3307:3306
