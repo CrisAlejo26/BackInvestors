@@ -1,9 +1,10 @@
-import { IsNumber, IsOptional, IsString, MinLength } from "class-validator";
+import { IsNumber, IsOptional, IsString, IsUUID, MinLength } from "class-validator";
 
 export class CreateRegisterDto {
 
     @IsString()
     @IsOptional()
+    @IsUUID()
     readonly id?: string;
 
     @IsOptional()
@@ -23,13 +24,11 @@ export class CreateRegisterDto {
 
     @IsString()
     @IsOptional()
-    @MinLength(6)
     readonly address?: string;
 
-    @IsString()
+    @IsNumber()
     @IsOptional()
-    @MinLength(6)
-    readonly postalCode?: string;
+    readonly postalCode?: number;
 
     @IsNumber()
     @IsOptional()
@@ -38,27 +37,22 @@ export class CreateRegisterDto {
 
     @IsString()
     @IsOptional()
-    @MinLength(6)
     readonly dni?: string;
 
     @IsString()
     @IsOptional()
-    @MinLength(6)
     readonly dniImage?: string;
 
     @IsString()
     @IsOptional()
-    @MinLength(6)
     readonly bussiness?: string;
 
     @IsString()
     @IsOptional()
-    @MinLength(6)
     readonly nif?: string;
 
     @IsNumber()
     @IsOptional()
-    @MinLength(6)
     readonly mountInversion?: number;
 
     @IsOptional()

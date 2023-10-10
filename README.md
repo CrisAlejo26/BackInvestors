@@ -54,6 +54,7 @@ $ docker-compose up -d
 $ name: nombre que queramos
 $ tag: local
 $ host: localhost
+$ port: 3307
 $ user: root
 $ password: alejo
 $ database: consolidado_cajeros

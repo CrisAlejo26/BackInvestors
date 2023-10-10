@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { CreateRegisterDto } from './dto/create-register.dto';
 import { UpdateRegisterDto } from './dto/update-register.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -18,10 +18,17 @@ export class RegisterService {
   ){}
 
   async create(createRegisterDto: CreateRegisterDto) {
-    
+    let createRegister = {...createRegisterDto, createdAt: new Date(), updatedAt: new Date()}
     try {
       
-      const createRegister = {...createRegisterDto, createdAt: new Date(), updatedAt: new Date()}
+      const fieldsToCheck = ['fullName', 'email', 'address', 'dni', 'bussiness', 'nif'];
+
+      // Valida si los campos existen y los convierte en minusculas
+      fieldsToCheck.forEach(field => {
+        if(createRegisterDto[field]) {
+          createRegister[field] = createRegisterDto[field].toLowerCase();
+        }
+      });
 
       const resul = this.registerRepository.create(createRegister);
       await this.registerRepository.save(resul);
@@ -38,19 +45,46 @@ export class RegisterService {
   }
 
   async findOne(id: string) {
-    let register: InversorRegister;
+    
+    const inversor = await this.registerRepository.findOneBy({ id })
 
-    if (!isNaN(+id)) {
-      register = await this.registerRepository.findOne({ id: id });
-    } 
+    if ( !inversor) {
+      throw new NotFoundException(`El inversor con id ${id} no existe`)
+    }
+
+    return inversor;
   }
 
-  update(id: string, updateRegisterDto: UpdateRegisterDto) {
-    return `This action updates a #${id} register`;
+  async update(id: string, updateRegisterDto: UpdateRegisterDto) {
+    let createRegister = {...updateRegisterDto, updatedAt: new Date()}
+
+    const fieldsToCheck = ['fullName', 'email', 'address', 'dni', 'bussiness', 'nif'];
+
+    // Valida si los campos existen y los convierte en minusculas
+    fieldsToCheck.forEach(field => {
+      if(updateRegisterDto[field]) {
+        createRegister[field] = updateRegisterDto[field].toLowerCase();
+      }
+    });
+
+    const register = await this.registerRepository.preload({
+      id: id,
+      ...createRegister
+    })
+
+    if ( !register ) throw new NotFoundException(`El inversor con id ${id} no existe`)
+    try {
+      return this.registerRepository.save( register );
+    } catch (error) {
+      this.handleExceptions(error)
+    }
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} register`;
+  async remove(id: string) {
+    const search = await this.findOne(id);
+    if ( search ) {
+      return await this.registerRepository.remove(search);
+    }
   }
 
   // Manejo de errores

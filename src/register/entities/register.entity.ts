@@ -43,10 +43,11 @@ export class InversorRegister {
     @Column({
         nullable: true,
     })
-    postalCode?: string;
+    postalCode?: number;
 
     @Column({
         nullable: true,
+        unique: true,
     })
     telephone?: number;
 
