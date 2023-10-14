@@ -7,7 +7,7 @@ services:
     restart: always
     container_name: cajeros
     volumes:
-      - ./mySQL:/data/db
+      - ./mySQL:/var/lib/mysql
       - ./batm.sql:/docker-entrypoint-initdb.d/batm.sql
     environment:
       - MYSQL_ROOT_PASSWORD=alejo
