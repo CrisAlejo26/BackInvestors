@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { RegisterModule } from './register/register.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { InversorRegister } from './register/entities/register.entity';
+import { BtcPayModule } from './btc-pay/btc-pay.module';
 
 @Module({
   imports: [RegisterModule,
@@ -17,7 +18,9 @@ import { InversorRegister } from './register/entities/register.entity';
       entities: [InversorRegister],
       // Sincronizar los cambios en la tabla o entidades
       synchronize: true,
-    })
+    }),
+    
+    BtcPayModule,
 
   ]
 })
