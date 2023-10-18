@@ -3,6 +3,8 @@
 /node_modules
 /mySQL/
 .env
+batm.sql
+
 
 # Logs
 logs
