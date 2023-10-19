@@ -56,6 +56,7 @@ export class RegisterService {
   }
 
   async update(id: string, updateRegisterDto: UpdateRegisterDto) {
+    let search = await this.findOne(id);
     let createRegister = {...updateRegisterDto, updatedAt: new Date()}
 
     const fieldsToCheck = ['fullName', 'email', 'address', 'dni', 'bussiness', 'nif'];
@@ -72,7 +73,7 @@ export class RegisterService {
       ...createRegister
     })
 
-    if ( !register ) throw new NotFoundException(`El inversor con id ${id} no existe`)
+    if ( !search ) throw new NotFoundException(`El inversor con id ${id} no existe`)
     try {
       return this.registerRepository.save( register );
     } catch (error) {

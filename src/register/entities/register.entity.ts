@@ -1,11 +1,9 @@
-import { IsNumber, IsOptional, IsPositive, IsString, IsStrongPassword, IsUUID, MinLength } from "class-validator";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class InversorRegister {
 
     @PrimaryGeneratedColumn('uuid')
-    @IsUUID()
     id?: string;
 
     @Column('varchar', {

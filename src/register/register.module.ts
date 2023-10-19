@@ -9,6 +9,7 @@ import { InversorRegister } from './entities/register.entity';
   providers: [RegisterService],
   imports: [
     TypeOrmModule.forFeature([ InversorRegister ])
-  ]
+  ],
+  exports: [ TypeOrmModule, RegisterService ]
 })
 export class RegisterModule {}

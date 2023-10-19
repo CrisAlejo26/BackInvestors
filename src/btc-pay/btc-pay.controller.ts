@@ -1,16 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { BtcPayService } from './btc-pay.service';
 import { CreateBtcPayDto } from './dto/create-btc-pay.dto';
 import { UpdateBtcPayDto } from './dto/update-btc-pay.dto';
 
-@Controller('btc-pay')
+@Controller('btcPay')
 export class BtcPayController {
   constructor(private readonly btcPayService: BtcPayService) {}
-
-  @Post()
-  create(@Body() createBtcPayDto: CreateBtcPayDto) {
-    return this.btcPayService.create(createBtcPayDto);
-  }
 
   @Get()
   findAll() {
@@ -18,17 +13,22 @@ export class BtcPayController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.btcPayService.findOne(+id);
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.btcPayService.findOne(id);
+  }
+
+  @Post()
+  create(@Body() createBtcPayDto: CreateBtcPayDto) {
+    return this.btcPayService.create(createBtcPayDto);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBtcPayDto: UpdateBtcPayDto) {
-    return this.btcPayService.update(+id, updateBtcPayDto);
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateBtcPayDto: UpdateBtcPayDto) {
+    return this.btcPayService.update(id, updateBtcPayDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.btcPayService.remove(+id);
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.btcPayService.remove(id);
   }
 }
