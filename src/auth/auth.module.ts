@@ -6,11 +6,15 @@ import { InversorAuth } from './entities/user.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
   imports: [
+
+    ConfigModule,
+
     // Importamos la tabla de User.entity
     TypeOrmModule.forFeature([ InversorAuth ]),
 
@@ -24,26 +28,20 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       imports: [ ConfigModule ],
       inject: [ ConfigService ],
       useFactory: (configService: ConfigService) => {
-        // Treamos la variable de entorno
         // console.log(configService.get('JWT_SECRET'));
         return {
+          // Treamos la variable de entorno
           secret: configService.get('JWT_SECRET'),
           signOptions: {
+            // Tiempo de expiracion del token
             expiresIn: '2h'
           }
         }
       }
     })
-
-    // JwtModule.register({
-    //   secret: '',
-    //   signOptions: {
-    //     expiresIn: process.env.JWT_SECRET
-    //   }
-    // })
     
   ],
   // Exportamos la configuracion que importamos para crear las tablas
-  exports: [ TypeOrmModule, AuthService ]
+  exports: [ TypeOrmModule, JwtStrategy, PassportModule, JwtModule ]
 })
 export class AuthModule {}

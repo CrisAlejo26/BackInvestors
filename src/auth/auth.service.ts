@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { InversorAuth } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { JwtPayload } from './interfaces/jwt.strategy.interface';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -12,7 +14,8 @@ export class AuthService {
 
   constructor(
     @InjectRepository(InversorAuth) 
-    private readonly inversorAuthRepository: Repository<InversorAuth>
+    private readonly inversorAuthRepository: Repository<InversorAuth>,
+    private readonly jwtService: JwtService
   ) {}
 
   async create(createAuthDto: CreateAuthDto) {
@@ -25,7 +28,10 @@ export class AuthService {
       })
       await this.inversorAuthRepository.save(inversor)
       delete inversor.password
-      return inversor
+      return {
+        ...inversor,
+        token: this.getJwtToken({ id: inversor.id })
+      }
     } catch (error) {
       this.handleErrors(error)
     }
@@ -38,7 +44,7 @@ export class AuthService {
     // Hacemos una peticion y solo buscamos por una peticion y me trae los datos
     const user = await this.inversorAuthRepository.findOne({ 
       where: { email }, 
-      select: { email: true, password: true } });
+      select: { email: true, password: true, id: true } });
 
     if ( !user ) throw new UnauthorizedException("Credenciales no validas (correo electronico)")
     
@@ -47,7 +53,17 @@ export class AuthService {
       throw new UnauthorizedException("Credenciales no validas (contraseña)")
     }
 
-    return user
+    return {
+      ...user,
+      token: this.getJwtToken({ id: user.id })
+    }
+  }
+
+  private getJwtToken(payload: JwtPayload) {
+    
+    const token = this.jwtService.sign( payload );
+
+    return token;
   }
 
   private handleErrors( error: any): never {
@@ -58,3 +74,4 @@ export class AuthService {
 
   }
 }
+
