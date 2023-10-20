@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { InversorAuth } from './entities/user.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   controllers: [AuthController],
@@ -18,13 +19,15 @@ import { JwtModule } from '@nestjs/jwt';
       defaultStrategy: 'jwt',
     }),
 
+    // JWT token
     JwtModule.registerAsync({
-      imports: [],
-      inject: [],
-      useFactory: () => {
-        console.log(process.env.JWT_SECRET);
+      imports: [ ConfigModule ],
+      inject: [ ConfigService ],
+      useFactory: (configService: ConfigService) => {
+        // Treamos la variable de entorno
+        // console.log(configService.get('JWT_SECRET'));
         return {
-          secret: process.env.JWT_SECRET,
+          secret: configService.get('JWT_SECRET'),
           signOptions: {
             expiresIn: '2h'
           }
