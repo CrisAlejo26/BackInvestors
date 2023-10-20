@@ -4,6 +4,7 @@
 /mySQL/
 .env
 batm.sql
+.env
 
 
 # Logs
