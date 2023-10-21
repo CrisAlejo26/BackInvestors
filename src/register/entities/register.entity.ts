@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { InversorDocument } from "src/files/entities/documentOne.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class InversorRegister {
@@ -56,11 +57,6 @@ export class InversorRegister {
     dni?: string;
 
     @Column({
-        nullable: true,
-    })
-    dniImage?: string;
-
-    @Column({
         type: 'varchar',
         nullable: true
     })
@@ -77,4 +73,21 @@ export class InversorRegister {
         nullable: true,
     })
     mountInversion?: number;
+
+    @Column({
+        type: 'varchar',
+        nullable: true,
+        unique: true
+    })
+    atm?: string;
+
+    @OneToMany(
+        () => InversorDocument,
+        ( image ) => image.inversor,
+        { 
+            cascade: true,
+            nullable: true
+        }
+    )
+    documentImage?: InversorDocument[];
 }

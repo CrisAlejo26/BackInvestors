@@ -21,7 +21,7 @@ export class InversorAuth {
     fullName: string;
 
     @Column('bool', {
-        default: true
+        default: false
     })
     isActive: boolean;
 

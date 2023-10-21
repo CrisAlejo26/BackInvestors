@@ -4,6 +4,7 @@ import { UpdateRegisterDto } from './dto/update-register.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { InversorRegister } from './entities/register.entity';
+import { InversorDocument } from 'src/files/entities/documentOne.entity';
 
 @Injectable()
 export class RegisterService {
@@ -18,9 +19,10 @@ export class RegisterService {
   ){}
 
   async create(createRegisterDto: CreateRegisterDto) {
+    const { documentImage } = createRegisterDto
+    console.log(documentImage);
     let createRegister = {...createRegisterDto, createdAt: new Date(), updatedAt: new Date()}
     try {
-      
       const fieldsToCheck = ['fullName', 'email', 'address', 'dni', 'bussiness', 'nif'];
 
       // Valida si los campos existen y los convierte en minusculas
@@ -29,10 +31,10 @@ export class RegisterService {
           createRegister[field] = createRegisterDto[field].toLowerCase();
         }
       });
-
-      const resul = this.registerRepository.create(createRegister);
-      await this.registerRepository.save(resul);
-      return resul
+      // const resul = this.registerRepository.create(createRegister);
+      // console.log('paso el resul: ', resul);
+      // await this.registerRepository.save(createRegister);
+      // return createRegister
 
     } catch (error) {
       this.handleExceptions(error)
@@ -59,7 +61,7 @@ export class RegisterService {
     let search = await this.findOne(id);
     let createRegister = {...updateRegisterDto, updatedAt: new Date()}
 
-    const fieldsToCheck = ['fullName', 'email', 'address', 'dni', 'bussiness', 'nif'];
+    const fieldsToCheck = ['fullName', 'email', 'address', 'dni', 'bussiness', 'nif', 'documentImage'];
 
     // Valida si los campos existen y los convierte en minusculas
     fieldsToCheck.forEach(field => {

@@ -1,4 +1,5 @@
 import { IsNumber, IsOptional, IsString, IsUUID, MinLength } from "class-validator";
+import { InversorDocument } from "src/files/entities/documentOne.entity";
 
 export class CreateRegisterDto {
 
@@ -39,9 +40,8 @@ export class CreateRegisterDto {
     @IsOptional()
     readonly dni?: string;
 
-    @IsString()
     @IsOptional()
-    readonly dniImage?: string;
+    readonly documentImage?: InversorDocument[];
 
     @IsString()
     @IsOptional()

@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BtcPayModule } from './btc-pay/btc-pay.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -26,6 +27,8 @@ import { AuthModule } from './auth/auth.module';
       // Sincronizar los cambios en la tabla o entidades
       synchronize: true,
     }),
+
+    FilesModule,
   ]
 })
 export class AppModule {}

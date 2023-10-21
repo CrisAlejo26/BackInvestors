@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req, SetMetadata } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto, LoginUserDto } from './dto';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUser, RawHeaders } from './decorators';
+import { GetUser, RawHeaders, RoleProtected, Auth,  } from './decorators';
 import { InversorAuth } from './entities/user.entity';
+import { UserRoleGuard } from './guards/user-role/user-role.guard';
+import { ValidRoles } from './interfaces/valid-roles';
 
 @Controller('auth')
 export class AuthController {
@@ -37,12 +39,27 @@ export class AuthController {
     }
   }
 
+  // @SetMetadata('roles', ['admin', 'inversor'])
+
   @Get('private2')
-  @UseGuards( AuthGuard() )
+  @RoleProtected( ValidRoles.Admin )
+  @UseGuards( AuthGuard(), UserRoleGuard )
   privateRoute2(
     @GetUser() user: InversorAuth,
   )
-    {
+  {
+      return {
+        ok: true,
+        user,
+    }
+  }
+
+  @Get('private3')
+  @Auth( ValidRoles.Inversor )
+  privateRoute3(
+    @GetUser() user: InversorAuth,
+  )
+  {
       return {
         ok: true,
         user,

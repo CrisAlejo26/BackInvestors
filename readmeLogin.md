@@ -4,6 +4,25 @@
 
 # Descripcion para Crear autenticación
 
+## Instalaciones necesarias
+
+```bash
+
+npm i bcrypt
+npm i axios
+npm i class-transformer
+npm i class-validator
+npm i mysql2
+npm i passport
+npm i passport-jwt
+npm i reflect-metadata
+npm i rxjs
+npm i typeorm
+npm i validation
+npm i -D @types/multer
+
+```
+
 ## 1. Crear un archivo .env para definir variables de entorno.
 
 ```bash
@@ -152,14 +171,6 @@ export class AuthController {
   }
 
 }
-
-```
-
-## 7. Instalamos bcrypt para encriptar las contraseñas.
-
-```bash
-
-npm i bcrypt
 
 ```
 
@@ -1462,3 +1473,539 @@ testingPrivateRoute(
 ```
 
 ## Definiendo los roles
+
+Ahora vamos a definir el tipo de autenticacion por roles, para eso vamos a crear una nueva ruta en nuestro controlador ***auth.controller.ts***
+
+```ts
+
+  @Get('private2')
+  @UseGuards( AuthGuard() )
+  privateRoute2(
+    @GetUser() user: InversorAuth,
+  )
+    {
+      return {
+        ok: true,
+        user,
+    }
+  }
+
+```
+
+Usamos el decorador SetMetada para establecer los roles que seran permitidos:
+
+```ts
+
+@Get('private2')
+  @SetMetadata('roles', ['admin', 'inversor'])
+  @UseGuards( AuthGuard() )
+  privateRoute2(
+    @GetUser() user: InversorAuth,
+  )
+    {
+      return {
+        ok: true,
+        user,
+    }
+  }
+
+```
+
+Ahora vamos a generar un guard el cual lo vamos a ubicar en el directorio ***auth***, dentro de otro directorio que se llamara ***guards*** y el nombre del archivo es ***userRole***
+
+```bash
+
+nest g gu auth/guards/userRole --no-spec
+
+```
+
+Con esto ya tenemos nuestro guard creado de forma rapida y segura.
+###
+Ahora lo que sigue es usarlo en nuestro controlador y colocar un console.log para hacer una prueba.
+
+```ts
+// user-role.guard.ts
+
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { Observable } from 'rxjs';
+
+@Injectable()
+export class UserRoleGuard implements CanActivate {
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
+
+    console.log('UseGuard');
+    return true;
+  }
+}
+
+```
+
+```ts
+
+// auth.controller.ts
+
+@Get('private2')
+  @SetMetadata('roles', ['admin', 'inversor'])
+  @UseGuards( AuthGuard(), UserRoleGuard )
+  privateRoute2(
+    @GetUser() user: InversorAuth,
+  )
+    {
+      return {
+        ok: true,
+        user,
+    }
+  }
+
+```
+
+Si hacemos una prueba nuevamente desde postman con un token valido hacia esa url, en la consola se mostrara este mensaje
+
+```bash
+
+[Nest] 14436  - 21/10/2023, 11:00:29     LOG [RouterExplorer] Mapped {/weex/v1/auth/login, POST} route +1ms
+[Nest] 14436  - 21/10/2023, 11:00:29     LOG [RouterExplorer] Mapped {/weex/v1/auth/private, GET} route +1ms
+[Nest] 14436  - 21/10/2023, 11:00:29     LOG [RouterExplorer] Mapped {/weex/v1/auth/private2, GET} route +1ms
+[Nest] 14436  - 21/10/2023, 11:00:29     LOG [NestApplication] Nest application successfully started +6ms
+UseGuard
+
+```
+
+Efectivamente pasa por el guard y en postman obtenemos la respuesta.
+
+```json
+
+{
+    "ok": true,
+    "user": {
+        "id": "07f90d2e-c328-4e67-96c6-05caa84833bd",
+        "email": "michaelrojas25@gmail.com",
+        "fullName": "Michael Rojas",
+        "isActive": true,
+        "roles": "inversor"
+    }
+}
+
+```
+
+#### Ahora si cambiamos el return de nuestro UseRoleGuard por false, nos arrojaria un error que prohibe la peticion
+
+```ts
+
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { Observable } from 'rxjs';
+
+@Injectable()
+export class UserRoleGuard implements CanActivate {
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
+
+    console.log('UseGuard');
+    return false;
+  }
+}
+
+```
+
+#### En postman obtendriamos este error
+
+```json
+
+{
+    "message": "Forbidden resource",
+    "error": "Forbidden",
+    "statusCode": 403
+}
+
+```
+
+Y en consola se mostraria nuevamente el mensaje de UseGuard.
+
+### Obtener roles en Metadata
+
+Ahora, lo anterior es una prueba para configurar el guard, pero ahora necesitamos traer los roles de los usuarios que solicitan la peticion en nuestro controlador, esta configuracion la haremos en el mismo ***UseRoleGuard***. Crearemos un atributo o propiedad de tipo ***Reflector*** el cual me va ayudar a traer y mostrar informacion que me da los decoradores, precisamente el decorador con el string ***roles***.
+
+```ts
+
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { Observable } from 'rxjs';
+
+@Injectable()
+export class UserRoleGuard implements CanActivate {
+
+  constructor(
+    private readonly reflector: Reflector
+  ) {}
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
+
+    const validRoles: string[] = this.reflector.get( 'roles', context.getHandler() )
+
+    console.log({ validRoles });
+
+    console.log('UseGuard');
+    return false;
+  }
+}
+
+
+```
+
+Cuando hagamos la peticion nuevamente a la url, en consola nos mostrara lo siguiente:
+
+```bash
+
+[Nest] 10584  - 21/10/2023, 11:13:16     LOG [RouterExplorer] Mapped {/weex/v1/auth/private2, GET} route +1ms
+[Nest] 10584  - 21/10/2023, 11:13:16     LOG [NestApplication] Nest application successfully started +6ms
+{ validRoles: [ 'admin', 'inversor' ] }
+UseGuard
+
+```
+
+El siguiente paso es obtener el los datos del usuario que esta haciendo la peticion, este paso ya lo habiamos hecho anteriormente en otro decorador, esto lo hicimos en el decorador ***GetUser*** en el archivo ***get-user.decorator.ts*** que fueron la siguientes lineas.
+
+```ts
+
+( data: string, ctx: ExecutionContext ) => {
+        
+        const req = ctx.switchToHttp().getRequest();
+        const user = req.user;
+
+```
+
+Si observamos el tipo de dato de la variable ***ctx*** ese tipo de dato ya lo tenemos en nuestro ***UseRoleGuard*** solo que la variable tiene otro nombre diferente, se llama ***context***
+por ende podemos seguir los mismos pasos para obtener los datos del usuario, solo es copiar y pegar y cambiar el nombre de la variable, no olvidemos cambiar el ***return*** por true.
+
+```ts
+
+// user-role.guard.ts
+
+import { CanActivate, ExecutionContext, Injectable, InternalServerErrorException } from '@nestjs/common';
+
+import { Reflector } from '@nestjs/core';
+import { Observable } from 'rxjs';
+
+@Injectable()
+export class UserRoleGuard implements CanActivate {
+
+  constructor(
+    private readonly reflector: Reflector
+  ) {}
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
+
+    const validRoles: string[] = this.reflector.get( 'roles', context.getHandler() )
+
+    const req = context.switchToHttp().getRequest();
+    const user = req.user as InversorAuth;
+
+    if ( !user ) {
+        throw new InternalServerErrorException('Usuario no encontrado ( request )')
+    }
+
+    console.log({userRoles: user.roles});
+
+    return true;
+  }
+}
+
+```
+
+Cuando enviemos la solicitud con postman entonces imprimira en consola el rol de ese usuario.
+
+```bash
+
+[Nest] 17096  - 21/10/2023, 11:31:22     LOG [RouterExplorer] Mapped {/weex/v1/auth/private, GET} route +1ms
+[Nest] 17096  - 21/10/2023, 11:31:22     LOG [RouterExplorer] Mapped {/weex/v1/auth/private2, GET} route +1ms
+[Nest] 17096  - 21/10/2023, 11:31:22     LOG [NestApplication] Nest application successfully started +7ms
+{ userRoles: 'inversor' }
+
+```
+
+#### Solo queda validar que tipo de rol queremos permitir, podemos incluso copiar el mismo codigo y cambiar el nombre de la clase y el archivo si lo que buscamos es permitirle a los usuarios con cierto rol usar ciertas rutas y a otros usuarios por ejemplo los administradores usar otras rutas adicionales tambien, en conclusion todo quedaria asi:
+
+```ts
+
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
+
+import { Reflector } from '@nestjs/core';
+import { Observable } from 'rxjs';
+import { InversorAuth } from 'src/auth/entities/user.entity';
+
+@Injectable()
+export class UserRoleGuard implements CanActivate {
+
+  constructor(
+    private readonly reflector: Reflector
+  ) {}
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
+
+    const validRoles: string[] = this.reflector.get( 'roles', context.getHandler() )
+
+    const req = context.switchToHttp().getRequest();
+    const user = req.user as InversorAuth;
+
+    if ( !validRoles ) return true;
+    if ( validRoles.length === 0 ) return true;
+
+    if ( !user ) {
+        throw new InternalServerErrorException('Usuario no encontrado ( request )')
+    }
+
+    // Si no envian ningun parametro en el decorador de SetMetada entonces lo deja pasar
+    if ( !validRoles ) return true;
+
+    // Si el usuario que intenta acceder a la ruta tiene uno de los roles especificados en el decorador SetMetadata entonces lo deja pasar
+    if ( validRoles.includes( user.roles ) ) {
+        return true;
+    }
+
+    throw new ForbiddenException({
+      message: {
+        error: `Usuario ${ user.fullName } no tiene permisos o el rol necesario para acceder a este recurso`,
+        rol_requerido: validRoles,
+        rol_actual: user.roles
+      },
+      error: 'Forbidden',
+      statusCode: 403
+      }
+    )
+  }
+}
+
+```
+
+Es cuestion de nosotros donde queramos restringir el acceso a ciertos roles, por ejemplo: si usamos el decorador asi:
+
+
+```ts
+
+@Get('private2')
+@SetMetadata('roles', ['admin'])
+@UseGuards( AuthGuard(), UserRoleGuard )
+privateRoute2(
+  @GetUser() user: InversorAuth,
+)
+  {
+    return {
+      ok: true,
+      user,
+  }
+}
+
+
+```
+
+#### Solo los que tengan rol de admin podran entrar a esa ruta.
+#
+### Ahora tenemos un problema, estamos propensos a equivocarnos por un letra mayuscula o un caracter en nuestro decorador SetMetadata vamos a solucionar eso.
+
+Ejecutamos en la terminal el siguiente comando para crear un decorador, los demas decoradores que creamos, no se pueden crear de la siguiente forma:
+
+```bash
+
+nest g d auth/decorators/roleProtected --no-spected
+
+```
+
+Con esto nos creara un archivo que se llama role-protected.decorator.ts y lo organizamos de la siguiente forma:
+
+
+```ts
+
+import { SetMetadata } from '@nestjs/common';
+
+export const META_ROLES = 'roles';
+
+export const RoleProtected = (...args: string[]) => {
+
+    SetMetadata(META_ROLES, args);
+} 
+
+
+```
+
+De esta forma garantizamos que el string ***roles*** solo estara definido 1 unica vez y no tendremos errores de caracteres o mayusculas, si necesitamos hacer algun cambio, solo lo hariamos ahi. Ahora vamos a ir al archivo de nuestra clase ***UserRoleGuard*** para pasarle esa constante o variable, hacemos el cambio en ***validRoles***.
+
+
+```ts
+
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { Observable } from 'rxjs';
+import { META_ROLES } from 'src/auth/decorators/role-protected/role-protected.decorator';
+import { InversorAuth } from 'src/auth/entities/user.entity';
+
+@Injectable()
+export class UserRoleGuard implements CanActivate {
+
+  constructor(
+    private readonly reflector: Reflector
+  ) {}
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
+
+    const validRoles: string[] = this.reflector.get( META_ROLES, context.getHandler() )
+
+```
+
+#### Ahora vamos a crear un ***enum*** para definir los roles, el archivo se va a llamar ***valid.roles.ts*** y la interfaz ***ValidRoles*** con la enumeracion
+
+```ts
+
+export enum ValidRoles {
+    admin = 'admin',
+    inversor = 'inversor'
+}
+
+```
+
+Una vez hecho esto importamos el enum en nuestro archivo ***role-protected.decorator.ts***, luego lo declaramos en el tipo de dato de ***args***
+
+```ts
+
+import { SetMetadata } from '@nestjs/common';
+import { ValidRoles } from 'src/auth/interfaces/valid-roles';
+
+export const META_ROLES = 'roles';
+
+export const RoleProtected = (...args: ValidRoles[] ) => {
+
+    return SetMetadata(META_ROLES, args);
+} 
+
+```
+
+Ahora definimos el decorador en mi controlador de auth, de la siguiente manera:
+
+```ts
+
+@Get('private2')
+  @RoleProtected( ValidRoles.Admin )
+  @UseGuards( AuthGuard(), UserRoleGuard )
+  privateRoute2(
+    @GetUser() user: InversorAuth,
+  )
+  {
+      return {
+        ok: true,
+        user,
+    }
+  }
+
+```
+
+### Con esto es suficiente, ahora el usuario que quiera usar esta url debe ser administrador.
+
+## Custom Decorator
+
+Ahora lo que vamos hacer es juntar todos los decoradores en uno solo, para que se vea mucho mejor, es decir agruparlo. Vamos a copiar la ruta del controlador que dejamos listo y cambiarmos los nombres para empezar.
+
+```ts
+
+@Get('private3')
+  @RoleProtected( ValidRoles.Admin )
+  @UseGuards( AuthGuard(), UserRoleGuard )
+  privateRoute3(
+    @GetUser() user: InversorAuth,
+  )
+  {
+      return {
+        ok: true,
+        user,
+    }
+  }
+
+```
+
+En la carpeta de ***decoradores*** del directorio ***auth*** creamos otro decorador que se llame ***auth.decorator.ts*** y pegamos el siguiente codigo:
+
+```ts
+
+import { UseGuards, applyDecorators } from "@nestjs/common"
+import { RoleProtected } from "./role-protected.decorator"
+import { AuthGuard } from "@nestjs/passport"
+import { ValidRoles } from "../interfaces/valid-roles"
+import { UserRoleGuard } from "../guards/user-role/user-role.guard"
+
+export function Auth(...roles: ValidRoles[]) {
+
+    return applyDecorators(
+        RoleProtected( ValidRoles.Admin ),
+        UseGuards( AuthGuard(), UserRoleGuard ),
+    )
+}
+
+```
+
+Esto lo que hace es usar los dos decoradores que ya teniamos anteriormente en nuestros controladores, ahora lo que sigue es usarlo en nuestros controladores, recuerda que puedes usar un archivo de barril para hacer las exportanciones mas facil y sin acumularsen.
+
+```ts
+
+  @Get('private3')
+  @Auth( ValidRoles.Admin )
+  privateRoute3(
+    @GetUser() user: InversorAuth,
+  )
+  {
+      return {
+        ok: true,
+        user,
+    }
+  }
+
+
+```
+
+### Tiene que ser admin para poder usar la url.
+
+# Usar el metodo de autenticacion en otros modulos o para cualquier ruta
+
+Para hacer esto lo unico que debemos hacer es importar el ***AuthModule*** en el modulo donde lo vamos a usar, por ejemplo en registros:
+
+
+```ts
+// register.module.ts
+
+import { Module } from '@nestjs/common';
+import { RegisterService } from './register.service';
+import { RegisterController } from './register.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { InversorRegister } from './entities/register.entity';
+import { AuthModule } from 'src/auth/auth.module';
+
+@Module({
+  controllers: [RegisterController],
+  providers: [RegisterService],
+  imports: [
+    TypeOrmModule.forFeature([ InversorRegister ]),
+    AuthModule
+  ],
+  exports: [ TypeOrmModule, RegisterService ]
+})
+export class RegisterModule {}
+
+```
+
+Luego importamos el decorador en uno de nuestros controladores de register, se puede intentar enviar una solicitud sin un token y no va a funcionar la solicitud, si le establecemos un tipo de rol tambien funcionario de igual forma, bloqueando accesos a ciertos roles.
+
+```ts
+
+@Get()
+  @Auth()
+  findAll() {
+    return this.registerService.findAll();
+  }
+
+```
+
+# Fin de la autenticacion

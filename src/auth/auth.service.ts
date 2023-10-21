@@ -44,13 +44,17 @@ export class AuthService {
     // Hacemos una peticion y solo buscamos por una peticion y me trae los datos
     const user = await this.inversorAuthRepository.findOne({ 
       where: { email }, 
-      select: { email: true, password: true, id: true } });
+      select: { email: true, password: true, id: true, isActive: true } });
 
     if ( !user ) throw new UnauthorizedException("Credenciales no validas (correo electronico)")
     
     // Comparamos la contraseña que no sea igual
-    if ( !bcrypt.compareSync(password, user.password) ) {
+    if ( !bcrypt.compareSync(password, user.password ) ) {
       throw new UnauthorizedException("Credenciales no validas (contraseña)")
+    }
+
+    if ( !user.isActive ) {
+      throw new UnauthorizedException("Credenciales no validas, tu usuario no se encuentra activo")
     }
 
     return {
