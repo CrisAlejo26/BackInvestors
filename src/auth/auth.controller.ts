@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto, LoginUserDto } from './dto';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from './decorators/get-user.decorator';
+import { GetUser, RawHeaders } from './decorators';
 import { InversorAuth } from './entities/user.entity';
 
 @Controller('auth')
@@ -23,17 +23,29 @@ export class AuthController {
   @UseGuards( AuthGuard() )
   testingPrivateRoute(
     // @Req() request: Express.Request
-    @GetUser() user: InversorAuth
+    @GetUser() user: InversorAuth,
+    @GetUser('email') userEmail: InversorAuth,
+    @RawHeaders() rawHeaders: string[],
   ) {
-
-    // console.log({user: request.user});
-    console.log({ user });
 
     return {
       ok: true,
       message: 'Hola Mundo Private',
-      user: {name: 'Cristian'}
+      user,
+      userEmail,
+      rawHeaders,
     }
   }
 
+  @Get('private2')
+  @UseGuards( AuthGuard() )
+  privateRoute2(
+    @GetUser() user: InversorAuth,
+  )
+    {
+      return {
+        ok: true,
+        user,
+    }
+  }
 }

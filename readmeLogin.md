@@ -1225,3 +1225,240 @@ Cuando hagamos una llamada a esa url, entonces en consola nos aparecera un mensa
 { user: 'Hola Mundo' }
 
 ```
+
+Ahora continuamos con la configuracion de la anotación, usando 2 parametros uno de ellos con data, de la siguiente manera:
+
+```ts
+
+import { ExecutionContext, createParamDecorator } from "@nestjs/common";
+
+export const GetUser = createParamDecorator(
+    
+    ( data, ctx: ExecutionContext ) => {
+        console.log({ data });
+        return "Hola Mundo"
+    }
+);
+
+```
+
+Como prueba puede enviar strings en la anotacion asi: @GetUser('probando')
+
+```ts
+
+  @Get('private')
+  @UseGuards( AuthGuard() )
+  testingPrivateRoute(
+    // @Req() request: Express.Request
+    @GetUser(['email', 'nombre']) user: InversorAuth,
+  ) {
+
+    // console.log({user: request.user});
+
+    return {
+      ok: true,
+      message: 'Hola Mundo Private',
+      user,
+    }
+  }
+
+}
+
+```
+
+#### Continuamos con la configuracion en nuestra anotacion, lo que sigue es devolver el usuario si el tocken enviado es correcto, sino vamos a decir que el usuario no se encontro
+
+```ts
+
+import { ExecutionContext, InternalServerErrorException, createParamDecorator } from "@nestjs/common";
+
+export const GetUser = createParamDecorator(
+    
+    ( data, ctx: ExecutionContext ) => {
+        
+        const req = ctx.switchToHttp().getRequest();
+        const user = req.user;
+
+        if ( !user ) {
+            throw new InternalServerErrorException('Usuario no encontrado ( request )')
+        }
+
+        return user;
+    }
+);
+
+```
+
+Por ejemplo podemos hacer la prueba con postman:
+
+#### Hacemos una peticion GET a:
+
+```bash
+
+http://localhost:3000/weex/v1/auth/private
+
+```
+
+#### Ahora en la seccion de Authentication elegimos la opcion de Bearer token, ponemos un token de un usuario ya creado o que tengamos en la base de datos, y la respuesta debe ser asi:
+
+```json
+
+{
+    "ok": true,
+    "message": "Hola Mundo Private",
+    "user": {
+        "id": "e7578085-d7b6-4f49-b0e3-c6b1f7338144",
+        "email": "michaelrojas23@gmail.com",
+        "fullName": "Michael Gonzalez",
+        "isActive": true,
+        "roles": "inversor"
+    }
+}
+
+```
+
+#### El siguiente punto es enviar un dato que necesitemos ver a la anotacion que acabamos de crear
+
+```ts
+
+import { ExecutionContext, InternalServerErrorException, createParamDecorator } from "@nestjs/common";
+
+export const GetUser = createParamDecorator(
+    
+    ( data: string, ctx: ExecutionContext ) => {
+        
+        const req = ctx.switchToHttp().getRequest();
+        const user = req.user;
+
+        if ( !user ) {
+            throw new InternalServerErrorException('Usuario no encontrado ( request )')
+        }
+
+        // Si no trae datos entonces muestra todo el usuario, sino entonces muestra el dato que buscamos
+        return ( !data ) ? user : user[data];
+    }
+);
+
+```
+
+Ahora podemos hacer un prueba en el controlador
+
+```ts
+
+@Get('private')
+  @UseGuards( AuthGuard() )
+  testingPrivateRoute(
+    // @Req() request: Express.Request
+    @GetUser() user: InversorAuth,
+    @GetUser('email') userEmail: InversorAuth,
+  ) {
+
+    return {
+      ok: true,
+      message: 'Hola Mundo Private',
+      user,
+      userEmail
+    }
+  }
+
+```
+
+Con esto solo va a traer en la respuesta el email, como tenemos dos anotaciones probablemente cuando se haga una solicitud a la URL del controlador entonces imprime dos respuestas de la siguiente forma en postman:
+
+```json
+
+{
+    "ok": true,
+    "message": "Hola Mundo Private",
+    "user": {
+        "id": "e7578085-d7b6-4f49-b0e3-c6b1f7338144",
+        "email": "michaelrojas23@gmail.com",
+        "fullName": "Michael Gonzalez",
+        "isActive": true,
+        "roles": "inversor"
+    },
+    "userEmail": "michaelrojas23@gmail.com"
+}
+
+```
+
+#### Lo que sigue es crear un otro decorador que nos trae los dados desde donde nos hacen una peticion GET. 
+
+Para eso crearmos otro archivo que va a tener nuestro decorador, el archivo se va a llamar ***raw-headers.decorator.ts*** copiamos todo el decorador ***get-user.decorator.ts*** en un nuevo archivo llamado ***raw-headers.decorator.ts*** luego cambiamos el nombre de la función por ***RawHeader*** y devolvemos el req.raw-headers.
+
+```ts
+
+import { ExecutionContext, InternalServerErrorException, createParamDecorator } from "@nestjs/common";
+
+export const RawHeaders = createParamDecorator(
+    
+    ( data: string, ctx: ExecutionContext ) => {
+        
+        const req = ctx.switchToHttp().getRequest();
+        return req.rawHeaders;
+    }
+);
+
+```
+
+#### Luego vamos a el auth.controller.ts y usamos el decorador en nuestro metodo, no podemos olvidar agregarlo al return para que se vea en la respuesta.
+
+
+```ts
+
+@Get('private')
+@UseGuards( AuthGuard() )
+testingPrivateRoute(
+  // @Req() request: Express.Request
+  @GetUser() user: InversorAuth,
+  @GetUser('email') userEmail: InversorAuth,
+  @RawHeaders() rawHeaders: string[],
+) {
+
+  return {
+    ok: true,
+    message: 'Hola Mundo Private',
+    user,
+    userEmail,
+    rawHeaders,
+  }
+}
+
+```
+
+#### Ahora podemos hacer una prueba con postman con un token correcto, la respuesta que nos debe dar es la siguiente:
+
+```json
+
+{
+    "ok": true,
+    "message": "Hola Mundo Private",
+    "user": {
+        "id": "740c8598-5525-4770-a08c-b6bd62a296d4",
+        "email": "michael@gmail.com",
+        "fullName": "Michael Velazco",
+        "isActive": true,
+        "roles": "inversor"
+    },
+    "userEmail": "michael@gmail.com",
+    "rawHeaders": [
+        "Authorization",
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc0MGM4NTk4LTU1MjUtNDc3MC1hMDhjLWI2YmQ2MmEyOTZkNCIsImlhdCI6MTY5NzgyOTI4NywiZXhwIjoxNjk3ODM2NDg3fQ.PNL9q11xuHrAeglzuTrVMoNKlpNdWLGXH3X3zPwUqeA",
+        "User-Agent",
+        "PostmanRuntime/7.33.0",
+        "Accept",
+        "*/*",
+        "Postman-Token",
+        "76063ed4-d14a-443c-a960-34c5fcaff7f4",
+        "Host",
+        "localhost:3000",
+        "Accept-Encoding",
+        "gzip, deflate, br",
+        "Connection",
+        "keep-alive"
+    ]
+}
+
+```
+
+## Definiendo los roles
