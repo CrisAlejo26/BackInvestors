@@ -19,8 +19,6 @@ export class RegisterService {
   ){}
 
   async create(createRegisterDto: CreateRegisterDto) {
-    const { documentImage } = createRegisterDto
-    console.log(documentImage);
     let createRegister = {...createRegisterDto, createdAt: new Date(), updatedAt: new Date()}
     try {
       const fieldsToCheck = ['fullName', 'email', 'address', 'dni', 'bussiness', 'nif'];
@@ -31,10 +29,9 @@ export class RegisterService {
           createRegister[field] = createRegisterDto[field].toLowerCase();
         }
       });
-      // const resul = this.registerRepository.create(createRegister);
-      // console.log('paso el resul: ', resul);
-      // await this.registerRepository.save(createRegister);
-      // return createRegister
+      const resul = this.registerRepository.create(createRegister);
+      await this.registerRepository.save(resul);
+      return createRegister
 
     } catch (error) {
       this.handleExceptions(error)

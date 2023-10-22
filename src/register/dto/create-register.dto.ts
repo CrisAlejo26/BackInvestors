@@ -41,7 +41,7 @@ export class CreateRegisterDto {
     readonly dni?: string;
 
     @IsOptional()
-    readonly documentImage?: InversorDocument[];
+    documentImage?: InversorDocument[];
 
     @IsString()
     @IsOptional()

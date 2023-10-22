@@ -20,8 +20,7 @@ export class InversorDocument {
     @ManyToOne(
         () => InversorRegister,
         ( image ) => image.documentImage,
-        { 
-            cascade: true,
+        {
             nullable: true
         }
     )

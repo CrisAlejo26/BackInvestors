@@ -27,8 +27,18 @@ export class RegisterController {
         }),
         ) file: Express.Multer.File[],
   ) {
-    let createRegister = {...createRegisterDto, documentImage: file}
-    return this.registerService.create(createRegister);
+
+    const documents: InversorDocument[] = file.map((f) => {
+      const doc = new InversorDocument();
+      doc.type = f.mimetype;
+      doc.name = f.originalname;
+      doc.data = f.buffer;
+      return doc;
+    });
+  
+    createRegisterDto.documentImage = documents;
+
+    return this.registerService.create(createRegisterDto);
   }
 
   @Get()
