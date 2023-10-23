@@ -5,6 +5,7 @@ import { UpdateRegisterDto } from './dto/update-register.dto';
 import { Auth } from 'src/auth/decorators';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { InversorDocument } from 'src/files/entities/documentOne.entity';
+import { ValidRoles } from 'src/auth/interfaces/valid-roles';
 
 @Controller('register')
 export class RegisterController {
@@ -31,7 +32,7 @@ export class RegisterController {
     const documents: InversorDocument[] = file.map((f) => {
       const doc = new InversorDocument();
       doc.type = f.mimetype;
-      doc.name = f.originalname;
+      doc.name = `${createRegisterDto.fullName}_dni.${f.mimetype.split('/')[1]}`;
       doc.data = f.buffer;
       return doc;
     });
@@ -42,22 +43,25 @@ export class RegisterController {
   }
 
   @Get()
-  @Auth()
+  @Auth( ValidRoles.Admin )
   findAll() {
     return this.registerService.findAll();
   }
 
   @Get(':id')
+  @Auth( ValidRoles.Admin )
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.registerService.findOne(id);
   }
 
   @Patch(':id')
+  @Auth( ValidRoles.Admin )
   update(@Param('id', ParseUUIDPipe) id: string, @Body() updateRegisterDto: UpdateRegisterDto) {
     return this.registerService.update(id, updateRegisterDto);
   }
 
   @Delete(':id')
+  @Auth( ValidRoles.Admin )
   remove(@Param('id') id: string) {
     return this.registerService.remove(id);
   }
