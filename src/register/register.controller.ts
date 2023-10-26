@@ -29,14 +29,34 @@ export class RegisterController {
         ) file: Express.Multer.File[],
   ) {
 
-    const documents: InversorDocument[] = file.map((f) => {
+    const documents: InversorDocument[] = file ? file.map((f) => {
       const doc = new InversorDocument();
       doc.type = f.mimetype;
       doc.name = `${createRegisterDto.fullName}_dni.${f.mimetype.split('/')[1]}`;
       doc.data = f.buffer;
       return doc;
-    });
+    }): [];
   
+    createRegisterDto.documentImage = documents;
+
+    return this.registerService.create(createRegisterDto);
+  }
+
+  @Post('withoutFiles')
+  @UseInterceptors(FilesInterceptor('image'))
+  createWithoutFiles(
+    @Body() createRegisterDto: CreateRegisterDto,
+    @UploadedFiles() file: Express.Multer.File[],
+  ) {
+
+    const documents: InversorDocument[] = file ? file.map((f) => {
+      const doc = new InversorDocument();
+      doc.type = f.mimetype;
+      doc.name = `${createRegisterDto.fullName}_dni.${f.mimetype.split('/')[1]}`;
+      doc.data = f.buffer;
+      return doc;
+    }) : [];
+
     createRegisterDto.documentImage = documents;
 
     return this.registerService.create(createRegisterDto);

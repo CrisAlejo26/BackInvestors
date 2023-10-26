@@ -4,7 +4,6 @@ import { UpdateRegisterDto } from './dto/update-register.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { InversorRegister } from './entities/register.entity';
-import { InversorDocument } from 'src/files/entities/documentOne.entity';
 
 @Injectable()
 export class RegisterService {
