@@ -29,7 +29,7 @@ export class RegisterService {
         }
       });
       const resul = this.registerRepository.create(createRegister);
-      await this.registerRepository.save(resul);
+      return await this.registerRepository.save(resul);
       return createRegister
 
     } catch (error) {
