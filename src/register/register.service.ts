@@ -92,6 +92,6 @@ export class RegisterService {
       
       this.logger.error(error);
 
-      throw new InternalServerErrorException('Error al crear el registro');
+      throw new InternalServerErrorException('El usuario ya existe');
   }
 }

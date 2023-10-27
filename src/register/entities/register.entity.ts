@@ -8,7 +8,6 @@ export class InversorRegister {
     id?: string;
 
     @Column('varchar', {
-        unique: true,
         nullable: true
     })
     fullName?: string;

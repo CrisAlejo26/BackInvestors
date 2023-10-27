@@ -21,6 +21,15 @@ async function bootstrap() {
       // }
     }),
   );
+
+  app.enableCors();
+
+  // app.enableCors({
+  //   origin: 'http://localhost:3000', // o un array de dominios permitidos
+  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  //   allowedHeaders: 'Content-Type, Accept',
+  //   credentials: true,
+  // }); 
   
   await app.listen(process.env.PORT);
 }
