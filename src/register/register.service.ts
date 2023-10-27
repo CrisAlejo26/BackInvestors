@@ -30,7 +30,6 @@ export class RegisterService {
       });
       const resul = this.registerRepository.create(createRegister);
       return await this.registerRepository.save(resul);
-      return createRegister
 
     } catch (error) {
       this.handleExceptions(error)
@@ -57,7 +56,7 @@ export class RegisterService {
     let search = await this.findOne(id);
     let createRegister = {...updateRegisterDto, updatedAt: new Date()}
 
-    const fieldsToCheck = ['fullName', 'email', 'address', 'dni', 'bussiness', 'nif', 'documentImage'];
+    const fieldsToCheck = ['fullName', 'email', 'address', 'dni', 'bussiness', 'nif'];
 
     // Valida si los campos existen y los convierte en minusculas
     fieldsToCheck.forEach(field => {

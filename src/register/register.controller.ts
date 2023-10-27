@@ -74,9 +74,47 @@ export class RegisterController {
     return this.registerService.findOne(id);
   }
 
+  @Patch('withoutFiles/:id')
+  // @Auth( ValidRoles.Admin )
+  update(
+    @Param('id', ParseUUIDPipe) id: string, 
+    @Body() updateRegisterDto: UpdateRegisterDto
+    ) 
+    {
+    return this.registerService.update(id, updateRegisterDto);
+  }
+
   @Patch(':id')
-  @Auth( ValidRoles.Admin )
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateRegisterDto: UpdateRegisterDto) {
+  // @Auth( ValidRoles.Admin )
+  @UseInterceptors(FilesInterceptor('images'))
+  updateWithFiles(
+    @Param('id', ParseUUIDPipe) id: string,
+    @UploadedFiles(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: '(.png|.jpg|.jpeg)',
+        })
+        .addMaxSizeValidator({
+          maxSize: 1500 * 1024 * 1024
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
+        }),
+        ) file: Express.Multer.File[],
+    @Body() updateRegisterDto: UpdateRegisterDto
+    ) 
+    {
+
+      const documents: InversorDocument[] = file ? file.map((f) => {
+        const doc = new InversorDocument();
+        doc.type = f.mimetype;
+        doc.name = `${updateRegisterDto.fullName}_dni.${f.mimetype.split('/')[1]}`;
+        doc.data = f.buffer;
+        return doc;
+      }) : [];
+  
+      updateRegisterDto.documentImage = documents;
+
     return this.registerService.update(id, updateRegisterDto);
   }
 

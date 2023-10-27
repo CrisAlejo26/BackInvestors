@@ -44,8 +44,7 @@ export class InversorRegister {
     postalCode?: number;
 
     @Column({
-        nullable: true,
-        unique: true,
+        nullable: true
     })
     telephone?: number;
 
