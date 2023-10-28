@@ -35,10 +35,10 @@ export class UpdateRegisterDto extends PartialType(CreateRegisterDto) {
     @Min(4, { message: "El código postal debe ser mayor a 4 caracteres" })
     readonly postalCode?: number;
 
-    @IsNumber()
+    @IsString()
     @IsOptional()
-    @Min(9, { message: "El telefono debe ser mayor a 9 caracteres" })
-    readonly telephone?: number;
+    @MinLength(9, { message: "El telefono debe ser mayor a 9 caracteres" })
+    readonly telephone?: string;
 
     @IsString()
     @IsOptional()
@@ -74,5 +74,13 @@ export class UpdateRegisterDto extends PartialType(CreateRegisterDto) {
 
     @IsOptional()
     images?: Express.Multer.File[];
+
+    @IsOptional()
+    @IsNumber()
+    readonly percentage?: number
+    
+    @IsString()
+    @IsOptional()
+    readonly idPay: string
 
 }

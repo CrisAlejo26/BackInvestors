@@ -31,10 +31,10 @@ export class CreateRegisterDto {
     @IsOptional()
     readonly postalCode?: number;
 
-    @IsNumber()
+    @IsString()
     @IsOptional()
     // @MinLength(6)
-    readonly telephone?: number;
+    readonly telephone?: string;
 
     @IsString()
     @IsOptional()
@@ -54,6 +54,14 @@ export class CreateRegisterDto {
     @IsNumber()
     @IsOptional()
     readonly mountInversion?: number;
+
+    @IsOptional()
+    @IsNumber()
+    readonly percentage?: number
+
+    @IsString()
+    @IsOptional()
+    readonly idPay: string
 
     @IsOptional()
     readonly createdAt?: Date;

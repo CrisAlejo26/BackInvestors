@@ -71,7 +71,7 @@ export class BtcPayService {
     try {
       const response = await axios.request(config);
       const { data } = response;
-      return data
+      return data.id
     } catch (error) {
       this.handleExceptions(error)
     }

@@ -46,7 +46,7 @@ export class InversorRegister {
     @Column({
         nullable: true
     })
-    telephone?: number;
+    telephone?: string;
 
     @Column('varchar', {
         unique: true,
@@ -74,10 +74,20 @@ export class InversorRegister {
 
     @Column({
         type: 'varchar',
-        nullable: true,
-        unique: true
+        nullable: true
     })
     atm?: string;
+
+    @Column({
+        nullable: true
+    })
+    percentage?: number
+
+    @Column({
+        type: 'varchar',
+        nullable: true
+    })
+    idPay?: string;
 
     @OneToMany(
         () => InversorDocument,
