@@ -5,6 +5,7 @@ import { BtcPayModule } from './btc-pay/btc-pay.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { FilesModule } from './files/files.module';
+import { TransactionsModule } from './transactions/transactions.module';
 
 @Module({
   imports: [
@@ -29,6 +30,8 @@ import { FilesModule } from './files/files.module';
     }),
 
     FilesModule,
+
+    TransactionsModule,
   ]
 })
 export class AppModule {}
