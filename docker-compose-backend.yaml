@@ -1,8 +1,11 @@
 version: '3.8'
 
 services:
-  backendInvestors:
-    build: .
+  backend_investors:
+    build: . 
+    # dockerfile: Dockerfile
+    container_name: backend_investors
+    restart: always
     ports:
       - "3001:3001"
     environment:
