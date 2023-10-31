@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  backendInvestors:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - TOKEN=${TOKEN}
+      - STORE_ID=${STORE_ID}
+      - PORT=${PORT}
+      - TYPE=${TYPE}
+      - HOST=bd_backend
+      - PORTMYSQL=3306
+      - DB_USERNAME=${DB_USERNAME}
+      - PASSWORD=${PASSWORD}
+      - DATABASE=${MYSQL_DATABASE}
+    volumes:
+      - ./src:/app/src
+  bd_backend:
+    image: mysql
+    restart: always
+    container_name: mysql_cajeros_backend
+    volumes:
+      - ./mySQL:/var/lib/mysql
+      - ./batm.sql:/docker-entrypoint-initdb.d/batm.sql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    ports:
+      - 3307:3306
