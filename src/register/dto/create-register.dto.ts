@@ -1,5 +1,5 @@
 import { IsNumber, IsOptional, IsString, IsUUID, MinLength } from "class-validator";
-import { InversorDocument } from "src/files/entities/documentOne.entity";
+import { InversorDocument } from "../../files/entities/documentOne.entity";
 
 export class CreateRegisterDto {
 

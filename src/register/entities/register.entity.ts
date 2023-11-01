@@ -1,4 +1,4 @@
-import { InversorDocument } from "src/files/entities/documentOne.entity";
+import { InversorDocument } from "../../files/entities/documentOne.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()

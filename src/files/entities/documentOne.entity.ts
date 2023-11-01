@@ -1,4 +1,4 @@
-import { InversorRegister } from "src/register/entities/register.entity";
+import { InversorRegister } from "../../register/entities/register.entity";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 

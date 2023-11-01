@@ -1,7 +1,7 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateRegisterDto } from './create-register.dto';
 import { IsNumber, IsOptional, IsString, IsUUID, Min, MinLength, min } from 'class-validator';
-import { InversorDocument } from 'src/files/entities/documentOne.entity';
+import { InversorDocument } from "../../files/entities/documentOne.entity";
 
 export class UpdateRegisterDto extends PartialType(CreateRegisterDto) {
 

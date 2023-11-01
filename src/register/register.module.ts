@@ -3,7 +3,7 @@ import { RegisterService } from './register.service';
 import { RegisterController } from './register.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { InversorRegister } from './entities/register.entity';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   controllers: [RegisterController],

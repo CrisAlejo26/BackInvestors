@@ -2,8 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from
 import { BtcPayService } from './btc-pay.service';
 import { CreateBtcPayDto } from './dto/create-btc-pay.dto';
 import { UpdateBtcPayDto } from './dto/update-btc-pay.dto';
-import { ValidRoles } from 'src/auth/interfaces/valid-roles';
-import { Auth } from 'src/auth/decorators';
+import { ValidRoles } from '../auth/interfaces/valid-roles';
+import { Auth } from '../auth/decorators';
 
 @Controller('btcPay')
 export class BtcPayController {

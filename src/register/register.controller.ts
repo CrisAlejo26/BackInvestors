@@ -2,10 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe, UseIn
 import { RegisterService } from './register.service';
 import { CreateRegisterDto } from './dto/create-register.dto';
 import { UpdateRegisterDto } from './dto/update-register.dto';
-import { Auth } from 'src/auth/decorators';
+import { Auth } from '../auth/decorators';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { InversorDocument } from 'src/files/entities/documentOne.entity';
-import { ValidRoles } from 'src/auth/interfaces/valid-roles';
+import { InversorDocument } from '../files/entities/documentOne.entity';
+import { ValidRoles } from '../auth/interfaces/valid-roles';
 
 @Controller('register')
 export class RegisterController {
