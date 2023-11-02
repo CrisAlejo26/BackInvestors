@@ -32,12 +32,9 @@ async function bootstrap() {
   // }); 
   
   await app.listen(process.env.PORT, process.env.HOST_MAIN, () => {
-    console.log(`La aplicación se está ejecutando en:`);
-    console.log(`➜ Local: http://localhost:${process.env.PORT}/`);
-    console.log(`➜ Red: http://${process.env.HOST_MAIN}:${process.env.PORT}/`);
+    console.log(`La aplicaci�n se est� ejecutando en:`);
+    console.log(`? Local: http://localhost:${process.env.PORT}/`);
+    console.log(`? Red: http://${process.env.HOST_MAIN}:${process.env.PORT}/`);
   });
-
-  // ! Sin el docker
-  // await app.listen(process.env.PORT);
 }
 bootstrap();

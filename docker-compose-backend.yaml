@@ -6,6 +6,7 @@ services:
     # dockerfile: Dockerfile
     container_name: backend_investors
     restart: always
+    command: ["/app/wait-for-it.sh", "bd_backend:3306", "--", "npm", "run", "start:dev"]    
     ports:
       - "3001:3001"
     environment:
@@ -31,4 +32,4 @@ services:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
     ports:
-      - 3307:3306
+      - 3306:3306
