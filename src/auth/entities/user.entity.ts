@@ -33,6 +33,22 @@ export class InversorAuth {
     })
     roles: 'inversor' | 'admin';
 
+    @Column({
+        type: 'varchar',
+        nullable: true
+    })
+    atm?: string;
+
+    @Column({
+        nullable: true
+    })
+    percentage?: number
+
+    @Column({
+        nullable: true,
+    })
+    inversionActiveDate?: Date;
+
     @BeforeInsert()
     checkFieldsBeforeInsert() {
         this.email = this.email.toLowerCase().trim();

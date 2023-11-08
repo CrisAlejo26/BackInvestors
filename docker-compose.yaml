@@ -9,6 +9,7 @@ services:
     volumes:
       - ./mySQL:/var/lib/mysql
       - ./batm.sql:/docker-entrypoint-initdb.d/batm.sql
+
     environment:
       - MYSQL_ROOT_PASSWORD=alejo
       - MYSQL_DATABASE=consolidado_cajeros

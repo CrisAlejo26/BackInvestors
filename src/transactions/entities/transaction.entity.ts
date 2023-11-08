@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
+@Entity({ name: 'transactionrecord', synchronize: false })
 export class Transactionrecord {
 
     @PrimaryGeneratedColumn('increment')
@@ -24,19 +24,19 @@ export class Transactionrecord {
     @Column('decimal', {
         nullable: true
     })
-    cashamount: number;
+    cashamount: string;
 
-    @Column( {
+    @Column('varchar', {
         nullable: true
     })
     cashcurrency: string;
 
-    @Column( {
+    @Column('varchar', {
         nullable: true
     })
     cellphoneused: string;
 
-    @Column( {
+    @Column('varchar', {
         nullable: true
     })
     cryptoaddress: string;
@@ -44,9 +44,9 @@ export class Transactionrecord {
     @Column('decimal', {
         nullable: true
     })
-    cryptoamount: number;
+    cryptoamount: string;
 
-    @Column( {
+    @Column('varchar', {
         nullable: true
     })
     cryptocurrency: string;
@@ -54,14 +54,14 @@ export class Transactionrecord {
     @Column('decimal', {
         nullable: true
     })
-    cryptodiscountamount: number;
+    cryptodiscountamount: string;
 
-    @Column('blob', {
+    @Column('text', {
         nullable: true
     })
-    detail: Buffer;
+    detail: string; // ! duda
 
-    @Column( {
+    @Column('varchar', {
         nullable: true
     })
     discountcode: string;
@@ -69,14 +69,14 @@ export class Transactionrecord {
     @Column('decimal', {
         nullable: true
     })
-    discountquotient: number;
+    discountquotient: string;
 
-    @Column( {
+    @Column('int', {
         nullable: true
     })
     errorcode: number;
 
-    @Column( {
+    @Column('int', {
         nullable: true
     })
     exchangestrategyused: number;
@@ -84,12 +84,12 @@ export class Transactionrecord {
     @Column('decimal', {
         nullable: true
     })
-    expectedprofitsetting: number;
+    expectedprofitsetting: string;
 
     @Column('decimal', {
         nullable: true
     })
-    expectedprofitvalue: number;
+    expectedprofitvalue: string;
 
     @Column('datetime', {
         nullable: true
@@ -99,37 +99,37 @@ export class Transactionrecord {
     @Column('decimal', {
         nullable: true
     })
-    feediscount: number;
+    feediscount: string;
 
     @Column('decimal', {
         nullable: true
     })
-    fixedtransactionfee: number;
+    fixedtransactionfee: string;
 
-    @Column({
+    @Column('varchar', {
         nullable: true
     })
     labels: string;
 
-    @Column({
+    @Column('varchar',{
         nullable: true
     })
     localtid: string;
 
-    @Column({
+    @Column('bigint', {
         nullable: true
     })
-    locationid: number;
+    locationid: string;
 
-    @Column({
+    @Column('varchar', {
         nullable: true
     })
     nameofcryptosettingused: string;
 
-    @Column('blob', {
+    @Column('text', {
         nullable: true
     })
-    note: Buffer;
+    note: string;
 
     @Column('bit', {
         nullable: true
@@ -139,19 +139,19 @@ export class Transactionrecord {
     @Column('decimal', {
         nullable: true
     })
-    ratesourceprice: number;
+    ratesourceprice: string;
 
-    @Column( {
+    @Column('varchar', {
         nullable: true
     })
     relatedremotetid: string;
 
-    @Column( {
+    @Column('varchar', {
         nullable: true
     })
     remotetid: string;
 
-    @Column({
+    @Column('int', {
         nullable: true
     })
     resendattempts: number;
@@ -161,10 +161,10 @@ export class Transactionrecord {
     })
     risk: boolean;
 
-    @Column('blob', {
+    @Column('text', {
         nullable: true
     })
-    scoringresult: Buffer;
+    scoringresult: string;
 
     @Column('datetime', {
         nullable: true
@@ -176,7 +176,7 @@ export class Transactionrecord {
     })
     sold: boolean;
 
-    @Column( {
+    @Column('int', {
         nullable: true
     })
     status: number;
@@ -186,17 +186,17 @@ export class Transactionrecord {
     })
     terminaltime: Date;
 
-    @Column({
+    @Column('varchar', {
         nullable: true
     })
     transactionimageid: string;
 
-    @Column({
+    @Column('int', {
         nullable: true
     })
     type: number;
 
-    @Column({
+    @Column('varchar', {
         nullable: true
     })
     uuid: string;
@@ -206,30 +206,27 @@ export class Transactionrecord {
     })
     withdrawn: boolean;
 
-    @Column({
+    @Column('bigint', {
         nullable: true
     })
-    discount_id: number;
+    discount_id: string;
 
-    @Column({
+    @Column('bigint', {
         nullable: true
     })
-    identity_id: number;
+    identity_id: string;
 
-    @Column({
-        nullable: true
-    })
-    terminal_id: number;
+    @Column('bigint')
+    terminal_id: string;
 
-    @Column({
+    @Column('varchar', {
         nullable: true
     })
     batchuid: string;
 
-    @Column('blob', {
+    @Column('text', {
         nullable: true
     })
-    cryptoaddresslong: Buffer;
-
+    cryptoaddresslong: string;
 
 }

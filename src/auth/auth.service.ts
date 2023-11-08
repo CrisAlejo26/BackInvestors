@@ -44,7 +44,7 @@ export class AuthService {
     // Hacemos una peticion y solo buscamos por una peticion y me trae los datos
     const user = await this.inversorAuthRepository.findOne({ 
       where: { email }, 
-      select: { email: true, password: true, id: true, isActive: true } });
+      select: { email: true, password: true, id: true, isActive: true, fullName: true, atm: true, percentage: true } });
 
     if ( !user ) throw new UnauthorizedException("Credenciales no validas (correo electronico)")
     

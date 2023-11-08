@@ -1,26 +1,35 @@
-import { Injectable } from '@nestjs/common';
-import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Transactionrecord } from './entities/transaction.entity';
+import { InversorAuth } from '../auth/entities/user.entity';
 
 @Injectable()
 export class TransactionsService {
-  create(createTransactionDto: CreateTransactionDto) {
-    return 'This action adds a new transaction';
-  }
 
-  findAll() {
-    return `This action returns all transactions`;
-  }
+  private readonly logger = new Logger('TransactionsService')
 
-  findOne(id: number) {
-    return `This action returns a #${id} transaction`;
-  }
+  constructor(
+    // Importamos la entidad de nuestra tabla
+    @InjectRepository(Transactionrecord)
+    private readonly registerRepository: Repository<Transactionrecord>
+  ){}
 
-  update(id: number, updateTransactionDto: UpdateTransactionDto) {
-    return `This action updates a #${id} transaction`;
-  }
+  async findAll(userInversor: InversorAuth) {
+    const terminal_id: string = userInversor.atm
+    const fechaString = userInversor.inversionActiveDate
+    const fromDate: Date = new Date(fechaString);
+    const transactions = await this.registerRepository
+      .createQueryBuilder('transaction')
+      .where('transaction.terminal_id = :terminal_id', { terminal_id })
+      .andWhere('transaction.servertime >= :fromDate', { fromDate })
+      .andWhere('transaction.status IN (:...status)', { status: [1, 3] })
+      .getMany();
 
-  remove(id: number) {
-    return `This action removes a #${id} transaction`;
+    if (!transactions || transactions.length === 0) {
+      throw new NotFoundException(`No se encontraron transacciones para el terminal con ID ${terminal_id} a partir de la fecha ${fromDate}`);
+    }
+
+    return transactions;
   }
 }
