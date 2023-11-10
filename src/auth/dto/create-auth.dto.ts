@@ -1,4 +1,4 @@
-import { IsEmail, IsString, Matches, MaxLength, MinLength } from "class-validator"
+import { IsDate, IsEmail, IsNumber, IsOptional, IsString, Matches, MaxLength, MinLength } from "class-validator"
 
 export class CreateAuthDto {
 
@@ -19,4 +19,21 @@ export class CreateAuthDto {
     @IsString()
     @MinLength(5)
     readonly fullName: string
+
+    @IsNumber()
+    @IsOptional()
+    percentage?: number
+
+    @IsDate()
+    @IsOptional()
+    inversionActiveDate?: Date;
+
+
+    @IsNumber()
+    @IsOptional()
+    mountInversion?: number;
+
+    @IsString()
+    @IsOptional()
+    atm?: string;
 }

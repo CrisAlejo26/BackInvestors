@@ -49,6 +49,11 @@ export class InversorAuth {
     })
     inversionActiveDate?: Date;
 
+    @Column({
+        nullable: true,
+    })
+    mountInversion?: number;
+
     @BeforeInsert()
     checkFieldsBeforeInsert() {
         this.email = this.email.toLowerCase().trim();

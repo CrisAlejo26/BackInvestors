@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
-import { CreateAuthDto, LoginUserDto } from './dto';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { CreateAuthDto, LoginUserDto, UpdateAuthDto } from './dto';
 import { Repository } from 'typeorm';
 import { InversorAuth } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -44,7 +44,7 @@ export class AuthService {
     // Hacemos una peticion y solo buscamos por una peticion y me trae los datos
     const user = await this.inversorAuthRepository.findOne({ 
       where: { email }, 
-      select: { email: true, password: true, id: true, isActive: true, fullName: true, atm: true, percentage: true } });
+      select: { email: true, password: true, id: true, isActive: true, fullName: true, atm: true, percentage: true, inversionActiveDate: true, mountInversion: true } });
 
     if ( !user ) throw new UnauthorizedException("Credenciales no validas (correo electronico)")
     
@@ -63,6 +63,34 @@ export class AuthService {
     }
   }
 
+  async findOne(id: string) {
+    
+    const inversor = await this.inversorAuthRepository.findOneBy({ id })
+
+    if ( !inversor) {
+      throw new NotFoundException(`El inversor con id ${id} no existe`)
+    }
+
+    return inversor;
+  }
+
+  async update(id: string, updateRegisterDto: UpdateAuthDto) {
+    let search = await this.findOne(id);    
+    
+    const register = await this.inversorAuthRepository.preload({
+      id: id,
+      ...updateRegisterDto
+    })
+
+    if ( !search ) throw new NotFoundException(`El inversor con id ${id} no existe`)
+    
+    try {
+      return this.inversorAuthRepository.save( register );
+    } catch (error) {
+      this.handleExceptions(error)
+    }
+  }
+
   private getJwtToken(payload: JwtPayload) {
     
     const token = this.jwtService.sign( payload );
@@ -76,6 +104,14 @@ export class AuthService {
     this.logger.error(error);
     throw new InternalServerErrorException('Error al crear el registro');
 
+  }
+
+  private handleExceptions( error: any) {
+    if ( error.code === '23505') throw new BadRequestException(error.detail);
+      
+      this.logger.error(error);
+
+      throw new InternalServerErrorException('El usuario ya existe');
   }
 }
 
