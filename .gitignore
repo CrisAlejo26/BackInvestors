@@ -2,9 +2,7 @@
 /dist
 /node_modules
 /mySQL/
-.env
 batm.sql
-.env
 
 
 # Logs

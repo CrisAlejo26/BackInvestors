@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, UseGuards, Req, SetMetadata } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Param, Patch, ParseUUIDPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto, LoginUserDto } from './dto';
+import { CreateAuthDto, LoginUserDto, UpdateAuthDto } from './dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser, RawHeaders, RoleProtected, Auth,  } from './decorators';
 import { InversorAuth } from './entities/user.entity';
@@ -64,5 +64,17 @@ export class AuthController {
         ok: true,
         user,
     }
+  }
+
+  @Get(':id')
+  findOneById(@Param('id') id: string) {
+    return this.authService.findOne(id);
+  }
+
+  @Patch(':id')
+  updateUserLogin(
+    @Param('id', ParseUUIDPipe) id: string, @Body() createAuthDto: UpdateAuthDto
+  ) {
+    return this.authService.update(id, createAuthDto);
   }
 }

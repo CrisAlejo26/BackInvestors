@@ -4,6 +4,8 @@ import { UpdateRegisterDto } from './dto/update-register.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { InversorRegister } from './entities/register.entity';
+import { InversorAuth } from 'src/auth/entities/user.entity';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class RegisterService {
@@ -14,7 +16,9 @@ export class RegisterService {
   constructor(
     // Importamos la entidad de nuestra tabla
     @InjectRepository(InversorRegister)
-    private readonly registerRepository: Repository<InversorRegister>
+    private readonly registerRepository: Repository<InversorRegister>,
+    @InjectRepository(InversorAuth)
+    private readonly authRepository: Repository<InversorAuth>
   ){}
 
   async create(createRegisterDto: CreateRegisterDto) {
@@ -71,6 +75,7 @@ export class RegisterService {
     })
 
     if ( !search ) throw new NotFoundException(`El inversor con id ${id} no existe`)
+    
     try {
       return this.registerRepository.save( register );
     } catch (error) {

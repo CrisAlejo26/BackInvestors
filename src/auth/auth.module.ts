@@ -42,6 +42,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     
   ],
   // Exportamos la configuracion que importamos para crear las tablas
-  exports: [ TypeOrmModule, JwtStrategy, PassportModule, JwtModule ]
+  exports: [ TypeOrmModule, JwtStrategy, PassportModule, JwtModule, AuthService ]
 })
 export class AuthModule {}

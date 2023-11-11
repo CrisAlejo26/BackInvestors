@@ -83,4 +83,8 @@ export class UpdateRegisterDto extends PartialType(CreateRegisterDto) {
     @IsOptional()
     readonly idPay: string
 
+    @IsString()
+    @IsOptional()
+    atm?: string;
+
 }
