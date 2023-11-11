@@ -2,8 +2,6 @@ import { BadRequestException, Injectable, InternalServerErrorException, Logger, 
 import { CreateBtcPayDto } from './dto/create-btc-pay.dto';
 import { UpdateBtcPayDto } from './dto/update-btc-pay.dto';
 import axios from 'axios';
-import { HttpStatus } from '@nestjs/common';
-import { Response } from 'express';
 
 @Injectable()
 export class BtcPayService {
@@ -53,9 +51,9 @@ export class BtcPayService {
     }
     let createPay = {
       ...createBtcPayDto, 
-      title: 'Pago de Inversionista', 
+      title: 'Donaciones e inversiones', 
       currency: 'EUR', 
-      description: 'Estas a punto de convertirte en uno de nuestros grandes inversiores en todo España, ¡Termina el Pago!', 
+      description: '¡Realiza tus donaciones o inversiones!', 
       allowCustomPaymentAmounts: false,
     }
     const config = {
