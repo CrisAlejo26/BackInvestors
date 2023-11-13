@@ -22,17 +22,16 @@ async function bootstrap() {
     }),
   );
 
-  app.enableCors();
+  // app.enableCors();
 
-  // app.enableCors({
-  //   origin: 'http://localhost:3000', // o un array de dominios permitidos
-  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  //   allowedHeaders: 'Content-Type, Accept',
-  //   credentials: true,
-  // }); 
+  app.enableCors({
+    origin: 'https://diptalles.com', // o un array de dominios permitidos
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  }); 
   
   await app.listen(process.env.PORT, process.env.HOST_MAIN, () => {
-    console.log(`La aplicación se está ejecutando en:`);
+    console.log(`La aplicaciï¿½n se estï¿½ ejecutando en:`);
     console.log(`? Local: http://localhost:${process.env.PORT}/`);
     console.log(`? Red: http://${process.env.HOST_MAIN}:${process.env.PORT}/`);
   });
