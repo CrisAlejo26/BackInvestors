@@ -32,14 +32,14 @@ async function bootstrap() {
     }),
   );
 
-  // app.enableCors();
+  app.enableCors();
   // app.use(helmet());
 
-  app.enableCors({
-    origin: '*', // o un array de dominios permitidos
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-  }); 
+  // app.enableCors({
+  //   origin: '*', // o un array de dominios permitidos
+  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  //   credentials: true,
+  // }); 
   
   await app.listen(process.env.PORT, process.env.HOST_MAIN, () => {
     console.log(`La aplicaci�n se est� ejecutando en:`);
