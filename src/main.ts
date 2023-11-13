@@ -22,13 +22,13 @@ async function bootstrap() {
     }),
   );
 
-  // app.enableCors();
+  app.enableCors();
 
-  app.enableCors({
-    origin: 'https://diptalles.com', // o un array de dominios permitidos
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-  }); 
+  // app.enableCors({
+  //   origin: 'https://diptalles.com', // o un array de dominios permitidos
+  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  //   credentials: true,
+  // }); 
   
   await app.listen(process.env.PORT, process.env.HOST_MAIN, () => {
     console.log(`La aplicaci�n se est� ejecutando en:`);
