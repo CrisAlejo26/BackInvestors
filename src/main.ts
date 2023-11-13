@@ -7,10 +7,10 @@ import * as fs from 'fs';
 
 async function bootstrap() {
 
-  const httpsOptions = {
-    key: fs.readFileSync('./secrets/cert.key'),
-    cert: fs.readFileSync('./secrets/cert.crt'),
-  };
+  // const httpsOptions = {
+  //   key: fs.readFileSync('./secrets/cert.key'),
+  //   cert: fs.readFileSync('./secrets/cert.crt'),
+  // };
 
   // const app = await NestFactory.create(AppModule, { httpsOptions });
   const app = await NestFactory.create(AppModule);
@@ -43,8 +43,8 @@ async function bootstrap() {
   
   await app.listen(process.env.PORT, process.env.HOST_MAIN, () => {
     console.log(`La aplicaci�n se est� ejecutando en:`);
-    console.log(`? Local: https://localhost:${process.env.PORT}/`);
-    console.log(`? Red: https://${process.env.HOST_MAIN}:${process.env.PORT}/`);
+    console.log(`? Local: http://localhost:${process.env.PORT}/`);
+    console.log(`? Red: http://${process.env.HOST_MAIN}:${process.env.PORT}/`);
   });
 }
 bootstrap();
