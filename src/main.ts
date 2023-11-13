@@ -1,9 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import * as https from 'https';
+import * as fs from 'fs';
+
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+
+  const httpsOptions = {
+    key: fs.readFileSync('./secrets/cert.key'),
+    cert: fs.readFileSync('./secrets/cert.crt'),
+  };
+
+  const app = await NestFactory.create(AppModule, { httpsOptions });
 
   app.setGlobalPrefix('weex/v1');
 
@@ -23,21 +32,18 @@ async function bootstrap() {
   );
 
   app.enableCors();
+  // app.use(helmet());
 
   // app.enableCors({
-  //   origin: 'http://localhost:3000', // o un array de dominios permitidos
+  //   origin: 'https://diptalles.com', // o un array de dominios permitidos
   //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  //   allowedHeaders: 'Content-Type, Accept',
   //   credentials: true,
   // }); 
   
   await app.listen(process.env.PORT, process.env.HOST_MAIN, () => {
-    console.log(`La aplicación se está ejecutando en:`);
-    console.log(`➜ Local: http://localhost:${process.env.PORT}/`);
-    console.log(`➜ Red: http://${process.env.HOST_MAIN}:${process.env.PORT}/`);
+    console.log(`La aplicaci�n se est� ejecutando en:`);
+    console.log(`? Local: http://localhost:${process.env.PORT}/`);
+    console.log(`? Red: http://${process.env.HOST_MAIN}:${process.env.PORT}/`);
   });
-
-  // ! Sin el docker
-  // await app.listen(process.env.PORT);
 }
 bootstrap();
