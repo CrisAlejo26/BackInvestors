@@ -12,7 +12,8 @@ async function bootstrap() {
     cert: fs.readFileSync('./secrets/cert.crt'),
   };
 
-  const app = await NestFactory.create(AppModule, { httpsOptions });
+  // const app = await NestFactory.create(AppModule, { httpsOptions });
+  const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('weex/v1');
 
