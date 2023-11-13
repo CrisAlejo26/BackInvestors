@@ -1,9 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import * as https from 'https';
+import * as fs from 'fs';
+
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+
+  const httpsOptions = {
+    key: fs.readFileSync('path/to/private-key.pem'),
+    cert: fs.readFileSync('path/to/certificate.pem'),
+  };
+
+  const app = await NestFactory.create(AppModule, { httpsOptions });
 
   app.setGlobalPrefix('weex/v1');
 
@@ -23,6 +32,7 @@ async function bootstrap() {
   );
 
   app.enableCors();
+  // app.use(helmet());
 
   // app.enableCors({
   //   origin: 'https://diptalles.com', // o un array de dominios permitidos
